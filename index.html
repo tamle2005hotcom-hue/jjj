@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Người Anh Yêu - Chúc Mừng 20/10 Ngọt Ngào</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library for Fireworks -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary-rose: #f43f5e;
+            --primary-glow: #fb7185;
+            --crimson-bg: #1e0514;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, #380721 0%, #1a0312 60%, #0d0109 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: #ffffff;
+        }
+
+        .font-dancing {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .font-greatvibes {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        /* Canvas Background */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Glassmorphism Styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(251, 113, 133, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(225, 29, 72, 0.25), inset 0 0 15px rgba(244, 63, 94, 0.15);
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 8px rgba(251, 113, 133, 0.8), 0 0 20px rgba(225, 29, 72, 0.6), 0 0 30px rgba(225, 29, 72, 0.4);
+        }
+
+        .neon-border {
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.5), inset 0 0 15px rgba(244, 63, 94, 0.3);
+        }
+
+        /* 3D Envelope Container & Styles */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: #e11d48;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 15px 35px rgba(225, 29, 72, 0.5), 0 0 25px rgba(244, 63, 94, 0.4);
+            cursor: pointer;
+            transition: transform 0.4s ease;
+        }
+
+        .envelope:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-left: 160px solid #be123c;
+            border-right: 160px solid #be123c;
+            border-top: 110px solid transparent;
+            border-bottom: 110px solid #9f1239;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            z-index: 3;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 125px solid #f43f5e;
+            transform-origin: top;
+            transition: transform 0.6s ease 0.2s, z-index 0.2s ease 0.2s;
+            z-index: 4;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            right: 15px;
+            height: 190px;
+            background: #fff;
+            color: #1f2937;
+            border-radius: 8px;
+            padding: 18px;
+            transition: transform 0.6s ease 0.4s, height 0.6s ease 0.4s;
+            z-index: 2;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .envelope.open .letter {
+            transform: translateY(-140px);
+            height: 350px;
+            z-index: 5;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        /* Vinyl Player Animations */
+        .vinyl-spin {
+            animation: spin 4s linear infinite;
+        }
+
+        .vinyl-paused {
+            animation-play-state: paused;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Polaroid 3D Cards */
+        .polaroid {
+            background: #ffffff;
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        .polaroid:hover {
+            transform: scale(1.08) rotate(0deg) !important;
+            z-index: 30;
+            box-shadow: 0 20px 40px rgba(244, 114, 182, 0.5);
+        }
+
+        /* Floating Slow Animation */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .animate-float {
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        /* Custom Scrollbar for Letter */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #f43f5e;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="relative text-gray-100 pb-20">
+
+    <!-- Canvas background for 3D Hearts and Stars -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- Vinyl Player Control Floating Top-Right -->
+    <div class="fixed top-5 right-5 z-50">
+        <button id="musicBtn" class="flex items-center gap-3 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-pink-400/30 hover:bg-white/20 transition-all duration-300">
+            <div id="vinylDisk" class="w-9 h-9 rounded-full bg-gray-950 border-2 border-rose-400 flex items-center justify-center vinyl-spin vinyl-paused relative shadow-inner">
+                <div class="w-3 h-3 bg-rose-400 rounded-full"></div>
+            </div>
+            <span id="musicStatus" class="text-xs font-semibold text-pink-300 tracking-wide pr-1">Giai Đệu Yêu 🎵</span>
+        </button>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 pt-10 flex flex-col items-center">
+
+        <!-- HEADER SECTION -->
+        <div class="text-center mb-8 animate-float">
+            <span class="inline-block bg-pink-500/20 text-pink-300 text-xs md:text-sm font-semibold px-4 py-1.5 rounded-full mb-3 border border-pink-400/40 backdrop-blur-sm shadow-sm">
+                🌹 Chúc Mừng Ngày Phụ Nữ Việt Nam 20/10 🌹
+            </span>
+            <h1 class="font-greatvibes text-5xl md:text-7xl text-rose-400 neon-glow py-2">
+                Gửi Người Anh Yêu Nhất
+            </h1>
+            <p class="text-pink-200/80 mt-2 text-sm md:text-base font-light max-w-md mx-auto">
+                Cảm ơn em đã đến và biến thế giới của anh trở thành nơi ngập tràn tình yêu và nụ cười...
+            </p>
+        </div>
+
+        <!-- LOVE DAYS TOGETHER COUNTER -->
+        <div class="w-full glass-card rounded-3xl p-6 md:p-8 mb-12 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-32 h-32 bg-pink-500/20 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-rose-500/20 rounded-full blur-2xl"></div>
+
+            <h2 class="font-dancing text-2xl md:text-3xl text-pink-300 font-bold mb-6 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-heart text-rose-500 animate-pulse"></i>
+                Hành Trình Chúng Mình Yêu Nhau
+                <i class="fa-solid fa-heart text-rose-500 animate-pulse"></i>
+            </h2>
+            
+            <div class="grid grid-cols-4 gap-3 md:gap-5 max-w-lg mx-auto">
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-pink-300/20 shadow-inner">
+                    <span id="days" class="block text-2xl md:text-4xl font-extrabold text-pink-400">00</span>
+                    <span class="text-xs text-pink-200/70 font-medium">Ngày</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-pink-300/20 shadow-inner">
+                    <span id="hours" class="block text-2xl md:text-4xl font-extrabold text-pink-400">00</span>
+                    <span class="text-xs text-pink-200/70 font-medium">Giờ</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-pink-300/20 shadow-inner">
+                    <span id="minutes" class="block text-2xl md:text-4xl font-extrabold text-pink-400">00</span>
+                    <span class="text-xs text-pink-200/70 font-medium">Phút</span>
+                </div>
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl p-3 md:p-4 border border-pink-300/20 shadow-inner">
+                    <span id="seconds" class="block text-2xl md:text-4xl font-extrabold text-pink-400">00</span>
+                    <span class="text-xs text-pink-200/70 font-medium">Giây</span>
+                </div>
+            </div>
+            
+            <p class="text-xs text-pink-300/60 mt-5 italic">Mốc kỷ niệm bắt đầu: <span id="startDateText">01/01/2023</span></p>
+        </div>
+
+        <!-- 3D INTERACTIVE LOVE LETTER -->
+        <div class="w-full flex flex-col items-center mb-16">
+            <p class="text-sm text-pink-300 font-medium mb-6 animate-bounce flex items-center gap-2">
+                <i class="fa-solid fa-envelope-open-text text-rose-400 text-lg"></i>
+                Chạm vào phong thư để mở bức thư tình anh dành riêng cho em
+            </p>
+            
+            <div class="envelope-wrapper my-8">
+                <div id="envelope" class="envelope">
+                    <div class="envelope-flap"></div>
+                    <div class="letter">
+                        <div class="h-full flex flex-col justify-between custom-scroll overflow-y-auto pr-1">
+                            <div>
+                                <h3 class="font-dancing text-xl text-rose-600 font-bold border-b border-rose-100 pb-2 mb-3">
+                                    Gửi Công Chúa Nhỏ Của Anh! 💖
+                                </h3>
+                                <div id="typedLetter" class="text-xs md:text-sm text-gray-700 leading-relaxed font-normal min-h-[160px] whitespace-pre-line">
+                                    <!-- Typing animation text inserted here -->
+                                </div>
+                            </div>
+                            <div class="text-right pt-3 border-t border-rose-100">
+                                <span class="font-dancing text-base text-rose-500 font-bold">Yêu em trọn vẹn! 💌</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- POLAROID 3D PHOTO GALLERY -->
+        <div class="w-full mb-16">
+            <h2 class="font-dancing text-3xl text-center text-pink-300 font-bold mb-8">
+                📸 Những Khoảnh Khắc Ngọt Ngào
+            </h2>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
+                <!-- Photo 1 -->
+                <div class="polaroid rounded-lg -rotate-3 transform" onclick="openLightbox('https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=1000&q=80', 'Nụ cười làm tan chảy trái tim anh ✨')">
+                    <div class="w-full h-52 rounded overflow-hidden mb-3 relative group">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=600&q=80" alt="Nụ Cười" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-pink-500/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-xs">Xem Ảnh Phóng To 🔍</div>
+                    </div>
+                    <p class="font-dancing text-center text-lg text-gray-800 font-bold">Nụ cười rạng rỡ ✨</p>
+                </div>
+
+                <!-- Photo 2 -->
+                <div class="polaroid rounded-lg rotate-2 transform" onclick="openLightbox('https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=1000&q=80', 'Bình yên là khi có em bên cạnh ☕')">
+                    <div class="w-full h-52 rounded overflow-hidden mb-3 relative group">
+                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=600&q=80" alt="Hẹn Hò" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-xs">Xem Ảnh Phóng To 🔍</div>
+                    </div>
+                    <p class="font-dancing text-center text-lg text-gray-800 font-bold">Cùng nhau đi khắp nơi ☕</p>
+                </div>
+
+                <!-- Photo 3 -->
+                <div class="polaroid rounded-lg -rotate-2 transform sm:col-span-2 md:col-span-1" onclick="openLightbox('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=1000&q=80', 'Em là món quà tuyệt vời nhất đời anh 🌟')">
+                    <div class="w-full h-52 rounded overflow-hidden mb-3 relative group">
+                        <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=600&q=80" alt="Yêu Thương" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-rose-500/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-xs">Xem Ảnh Phóng To 🔍</div>
+                    </div>
+                    <p class="font-dancing text-center text-lg text-gray-800 font-bold">Nắm tay đi hết chặng đường 🤝</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SURPRISE BUTTON -->
+        <div class="text-center mb-12">
+            <button id="surpriseBtn" class="px-8 py-4 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-600 text-white font-bold text-lg rounded-full shadow-lg hover:shadow-pink-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 mx-auto border border-pink-300/30">
+                <i class="fa-solid fa-wand-magic-sparkles text-yellow-300 text-xl animate-spin"></i>
+                Bấm Vào Đây Để Nhận Bất Ngờ!
+            </button>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center text-xs text-pink-300/50 font-light">
+            Made with ❤️ for My Girl • Happy Vietnamese Women's Day 20/10
+        </footer>
+
+    </div>
+
+    <!-- LIGHTBOX MODAL FOR POLAROID PHOTOS -->
+    <div id="lightboxModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300" onclick="closeLightbox()">
+        <div class="relative max-w-2xl w-full bg-white p-3 rounded-2xl shadow-2xl overflow-hidden text-center" onclick="event.stopPropagation()">
+            <img id="lightboxImg" src="" alt="Photo" class="w-full h-auto max-h-[75vh] object-cover rounded-xl">
+            <p id="lightboxCaption" class="font-dancing text-xl text-gray-800 font-bold mt-3 mb-1"></p>
+            <button onclick="closeLightbox()" class="absolute top-3 right-3 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-black/70 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- SURPRISE QUESTION MODAL -->
+    <div id="surpriseModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-gradient-to-b from-gray-900 via-purple-950 to-pink-950 rounded-3xl p-6 md:p-8 max-w-sm w-full text-center shadow-2xl transform scale-90 transition-transform duration-300 relative border border-pink-500/40">
+            
+            <div class="w-16 h-16 bg-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl text-pink-400 border border-pink-400/30 animate-bounce">
+                💘
+            </div>
+
+            <h3 class="font-dancing text-2xl text-pink-300 font-bold mb-2">Câu Hỏi Quan Trọng!</h3>
+            <p class="text-gray-200 text-sm mb-6">Anh có yêu em nhiều như em yêu anh không? 🥰</p>
+
+            <div class="flex items-center justify-center gap-4 relative min-h-[60px]" id="buttonContainer">
+                <button id="yesBtn" class="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold rounded-full shadow-md hover:scale-105 transition-all text-sm z-10 border border-pink-300/40">
+                    Dạ Có! Nhiều Nhất Đời ❤️
+                </button>
+                <button id="noBtn" class="px-6 py-2.5 bg-gray-700/80 text-gray-300 font-semibold rounded-full text-sm transition-all absolute right-2 border border-gray-600">
+                    Không nha 😜
+                </button>
+            </div>
+
+            <button id="closeModalBtn" class="absolute top-3 right-4 text-gray-400 hover:text-white text-xl">
+                &times;
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // 1. Mốc thời gian kỷ niệm (Năm, Tháng-1, Ngày)
+        const START_DATE = new Date(2023, 0, 1); // Bạn có thể tùy chỉnh ngày tại đây
+
+        document.getElementById('startDateText').innerText = 
+            `${String(START_DATE.getDate()).padStart(2, '0')}/${String(START_DATE.getMonth() + 1).padStart(2, '0')}/${START_DATE.getFullYear()}`;
+
+        // 2. Lời Chúc Yêu Thương Viết Sẵn Cho Ngày 20/10
+        const letterParagraphs = [
+            "Chúc mừng ngày Phụ nữ Việt Nam 20/10 tới người con gái tuyệt vời nhất trong lòng anh! ✨",
+            "Cảm ơn em đã xuất hiện, mang theo ánh nắng và sự dịu dàng làm bừng sáng mọi khoảnh khắc trong cuộc đời anh. ❤️",
+            "Chúc công chúa của anh luôn rạng rỡ, hạnh phúc, nụ cười luôn nở trên môi và mãi là cô gái đáng yêu nhất thế giới. Dù hôm nay hay những ngày sau, anh vẫn sẽ luôn ở bên để yêu thương, chăm sóc và bảo vệ em! 🌹"
+        ];
+        const fullLetterText = letterParagraphs.join("\n\n");
+
+        // 3. Canvas Trái Tim & Hạt Sao 3D Lơ Lửng
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 80;
+                this.size = Math.random() * 16 + 8;
+                this.speedY = Math.random() * 1.2 + 0.4;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.icon = ['🌸', '💖', '✨', '💕', '🌷', '🌹'][Math.floor(Math.random() * 6)];
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText(this.icon, this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        const particles = Array.from({ length: 40 }, () => new Particle());
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+        animateCanvas();
+
+        // 4. Đồng Hồ Đếm Ngày Yêu Nhau (Days Counter)
+        function updateCounter() {
+            const now = new Date();
+            const diff = now - START_DATE;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / 1000 / 60) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('days').innerText = String(days).padStart(2, '0');
+            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+        }
+        setInterval(updateCounter, 1000);
+        updateCounter();
+
+        // 5. Mở Thư & Hiệu Ứng Gõ Chữ (Typing Effect)
+        const envelope = document.getElementById('envelope');
+        const typedLetter = document.getElementById('typedLetter');
+        let isOpened = false;
+        let typeIndex = 0;
+
+        function typeWriter() {
+            if (typeIndex < fullLetterText.length) {
+                typedLetter.textContent += fullLetterText.charAt(typeIndex);
+                typeIndex++;
+                setTimeout(typeWriter, 35);
+            }
+        }
+
+        envelope.addEventListener('click', () => {
+            if (!isOpened) {
+                envelope.classList.add('open');
+                isOpened = true;
+                setTimeout(typeWriter, 700);
+
+                // Bắn pháo hoa bướm tim ăn mừng khi mở thư
+                confetti({
+                    particleCount: 60,
+                    spread: 70,
+                    origin: { y: 0.65 }
+                });
+            }
+        });
+
+        // 6. Trình Phát Nhạc Vinyl Synth (Web Audio API)
+        let audioCtx = null;
+        let isPlaying = false;
+        let melodyInterval = null;
+
+        const musicBtn = document.getElementById('musicBtn');
+        const vinylDisk = document.getElementById('vinylDisk');
+        const musicStatus = document.getElementById('musicStatus');
+
+        const notes = [261.63, 329.63, 392.00, 523.25, 440.00, 349.23, 392.00, 493.88];
+        let noteIdx = 0;
+
+        function playTone() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(notes[noteIdx], audioCtx.currentTime);
+            noteIdx = (noteIdx + 1) % notes.length;
+
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.4);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 1.4);
+        }
+
+        musicBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                isPlaying = true;
+                vinylDisk.classList.remove('vinyl-paused');
+                musicStatus.innerText = "Đang Phát 🎵";
+                playTone();
+                melodyInterval = setInterval(playTone, 500);
+            } else {
+                isPlaying = false;
+                vinylDisk.classList.add('vinyl-paused');
+                musicStatus.innerText = "Giai Đệu Yêu 🎵";
+                clearInterval(melodyInterval);
+            }
+        });
+
+        // 7. Lightbox Modal Cho Album Polaroid
+        const lightboxModal = document.getElementById('lightboxModal');
+        const lightboxImg = document.getElementById('lightboxImg');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        function openLightbox(src, caption) {
+            lightboxImg.src = src;
+            lightboxCaption.innerText = caption;
+            lightboxModal.classList.remove('hidden');
+            setTimeout(() => {
+                lightboxModal.classList.remove('opacity-0');
+            }, 10);
+        }
+
+        function closeLightbox() {
+            lightboxModal.classList.add('opacity-0');
+            setTimeout(() => {
+                lightboxModal.classList.add('hidden');
+            }, 300);
+        }
+
+        // 8. Modal Bất Ngờ & Nút "Không" Di Chuyển Thông Minh
+        const surpriseBtn = document.getElementById('surpriseBtn');
+        const surpriseModal = document.getElementById('surpriseModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+
+        surpriseBtn.addEventListener('click', () => {
+            surpriseModal.classList.remove('hidden');
+            setTimeout(() => {
+                surpriseModal.classList.remove('opacity-0');
+                surpriseModal.children[0].classList.remove('scale-90');
+                surpriseModal.children[0].classList.add('scale-100');
+            }, 10);
+
+            // Bắn pháo hoa rực rỡ toàn màn hình
+            confetti({
+                particleCount: 120,
+                spread: 90,
+                origin: { y: 0.5 }
+            });
+        });
+
+        function closeModal() {
+            surpriseModal.classList.add('opacity-0');
+            surpriseModal.children[0].classList.remove('scale-100');
+            surpriseModal.children[0].classList.add('scale-90');
+            setTimeout(() => {
+                surpriseModal.classList.add('hidden');
+                noBtn.style.transform = 'none'; // Reset vị trí nút No
+            }, 300);
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        // Nút No né tránh thông minh khi di chuột/chạm vào
+        function moveNoButton() {
+            const randomX = (Math.random() - 0.5) * 220;
+            const randomY = (Math.random() - 0.5) * 120;
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        yesBtn.addEventListener('click', () => {
+            // Bắn pháo hoa đôi bên
+            const duration = 2.5 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 6,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 6,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            setTimeout(() => {
+                alert('Anh biết ngay mà! Yêu công chúa của anh nhiều nhất trên đời ❤️✨');
+                closeModal();
+            }, 400);
+        });
+    </script>
+</body>
+</html>
